@@ -27,4 +27,3 @@ public class Package {
     public String getStatus() { return status; }
     public Timestamp getCreatedAt() { return createdAt; }
 }
-
