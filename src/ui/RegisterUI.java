@@ -1,7 +1,6 @@
 package ui;
 
 import services.UserService;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,17 +9,16 @@ import java.awt.event.ActionListener;
 public class RegisterUI extends JFrame {
     private JTextField nameField, emailField;
     private JPasswordField passwordField;
-    private JComboBox<String> roleComboBox;
-    private JButton registerButton, backButton;
+    private JComboBox<String> roleBox;
+    private JButton registerButton;
 
     public RegisterUI() {
-        setTitle("Package Tracking System - Register");
+        setTitle("User Registration");
         setSize(400, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(5, 2, 10, 10));
+        setLayout(new GridLayout(5, 2));
 
-        // Components
         add(new JLabel("Name:"));
         nameField = new JTextField();
         add(nameField);
@@ -34,31 +32,17 @@ public class RegisterUI extends JFrame {
         add(passwordField);
 
         add(new JLabel("Role:"));
-        String[] roles = {"Customer", "DeliveryCompany", "Admin"};
-        roleComboBox = new JComboBox<>(roles);
-        add(roleComboBox);
+        roleBox = new JComboBox<>(new String[]{"Customer", "Delivery Company", "Admin"});
+        add(roleBox);
 
         registerButton = new JButton("Register");
-        backButton = new JButton("Back to Login");
-
-        add(registerButton);
-        add(backButton);
-
-        // Action Listeners
         registerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 registerUser();
             }
         });
-
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new LoginUI();
-                dispose();
-            }
-        });
+        add(registerButton);
 
         setVisible(true);
     }
@@ -67,19 +51,13 @@ public class RegisterUI extends JFrame {
         String name = nameField.getText();
         String email = emailField.getText();
         String password = new String(passwordField.getPassword());
-        String role = (String) roleComboBox.getSelectedItem();
+        String role = (String) roleBox.getSelectedItem();
 
-        boolean success = UserService.registerUser(name, email, password, role);
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Registration Successful! You can now login.");
-            new LoginUI();
+        if (UserService.registerUser(name, email, password, role)) {
+            JOptionPane.showMessageDialog(this, "Registration Successful!");
             dispose();
         } else {
             JOptionPane.showMessageDialog(this, "Registration Failed!", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-
-    public static void main(String[] args) {
-        new RegisterUI();
     }
 }
