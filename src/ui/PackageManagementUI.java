@@ -63,7 +63,7 @@ public class PackageManagementUI extends JFrame {
             }
         });
 
-        JButton backButton = createStyledButton("Back to Dashboard");
+        JButton backButton = createStyledButton("Dashboard");
         backButton.setBackground(new Color(220, 53, 69)); // Red color for Back to Dashboard
         backButton.addActionListener(new ActionListener() {
             @Override
