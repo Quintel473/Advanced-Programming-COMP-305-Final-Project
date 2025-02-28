@@ -23,7 +23,7 @@ public class DashboardUI extends JFrame {
         panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         panel.setBackground(Color.WHITE);
 
-        // Welcome Label
+        // Welcome, Label
         JLabel titleLabel = new JLabel("Welcome, " + user.getName(), SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 22));
         panel.add(titleLabel, BorderLayout.NORTH);
