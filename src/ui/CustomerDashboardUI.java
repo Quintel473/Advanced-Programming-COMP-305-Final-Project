@@ -38,7 +38,7 @@ public class CustomerDashboardUI extends JFrame {
         managePackagesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                new PackageManagementUI(user).setVisible(true);
+                new CustomerPackageManagementUI(user).setVisible(true);
             }
         });
 

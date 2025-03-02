@@ -8,11 +8,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class PackageManagementUI extends JFrame {
+public class CustomerPackageManagementUI extends JFrame {
     private User user;
     private JTextArea packageListArea;
 
-    public PackageManagementUI(User user) {
+    public CustomerPackageManagementUI(User user) {
         this.user = user;
         setTitle("Package Management - " + user.getRole());
         setSize(700, 500);
@@ -122,7 +122,7 @@ public class PackageManagementUI extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             User testUser = new User(1, "John Doe", "johndoe@example.com", "Admin", "Customer");
-            new PackageManagementUI(testUser);
+            new CustomerPackageManagementUI(testUser);
         });
     }
 }
