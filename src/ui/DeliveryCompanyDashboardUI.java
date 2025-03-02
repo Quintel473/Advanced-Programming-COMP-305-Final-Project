@@ -8,14 +8,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class PackageManagementUI extends JFrame {
+public class DeliveryCompanyDashboardUI extends JFrame {
     private User user;
     private JTextArea packageListArea;
 
-    public PackageManagementUI(User user) {
+    public DeliveryCompanyDashboardUI(User user) {
         this.user = user;
-        setTitle("Package Management - " + user.getRole());
-        setSize(700, 500);
+        setTitle("Delivery Company Dashboard - " + user.getRole());
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
@@ -26,7 +26,7 @@ public class PackageManagementUI extends JFrame {
         mainPanel.setBackground(Color.WHITE);
 
         // Title Label
-        JLabel titleLabel = new JLabel("Manage Packages", SwingConstants.CENTER);
+        JLabel titleLabel = new JLabel("Delivery Company Dashboard", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
@@ -45,33 +45,26 @@ public class PackageManagementUI extends JFrame {
         JButton refreshButton = createStyledButton("Refresh");
         refreshButton.addActionListener(e -> loadPackages());
 
-        JButton addButton = createStyledButton("Add Package");
-        addButton.setBackground(new Color(40, 167, 69)); // Green color for Add Package
-        addButton.addActionListener(e -> {
-            String trackingNumber = JOptionPane.showInputDialog(this, "Enter Tracking Number:");
-            int recipientId = Integer.parseInt(JOptionPane.showInputDialog(this, "Enter Recipient ID:"));
-            if (trackingNumber != null && !trackingNumber.trim().isEmpty()) {
-                boolean success = PackageService.addPackage(trackingNumber, user.getId(), recipientId);
+        JButton updateStatusButton = createStyledButton("Update Status");
+        updateStatusButton.setBackground(new Color(255, 193, 7)); // Yellow color for Update Status
+        updateStatusButton.addActionListener(e -> {
+            String packageIdStr = JOptionPane.showInputDialog(this, "Enter Package ID:");
+            String newStatus = JOptionPane.showInputDialog(this, "Enter New Status:");
+            if (packageIdStr != null && !packageIdStr.trim().isEmpty() && newStatus != null && !newStatus.trim().isEmpty()) {
+                int packageId = Integer.parseInt(packageIdStr);
+                boolean success = PackageService.updatePackageStatus(packageId, newStatus);
                 if (success) {
-                    JOptionPane.showMessageDialog(this, "Package added successfully!");
+                    JOptionPane.showMessageDialog(this, "Package status updated successfully!");
                     loadPackages(); // Refresh the list
                 } else {
-                    JOptionPane.showMessageDialog(this, "Failed to add package.");
+                    JOptionPane.showMessageDialog(this, "Failed to update package status.");
                 }
             }
         });
 
-        JButton backButton = createStyledButton("Dashboard");
-        backButton.setBackground(new Color(220, 53, 69)); // Red color for Back to Dashboard
-        backButton.addActionListener(e -> {
-            openDashboard();
-            dispose(); // Close the current window
-        });
-
         // Add Buttons
         buttonPanel.add(refreshButton);
-        buttonPanel.add(addButton);
-        buttonPanel.add(backButton); // Ensure the Dashboard button is added and visible
+        buttonPanel.add(updateStatusButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
@@ -102,27 +95,5 @@ public class PackageManagementUI extends JFrame {
                             " | Created At: " + p.getCreatedAt() + "\n"
             );
         }
-    }
-
-    private void openDashboard() {
-        Window[] windows = Window.getWindows();
-        for (Window window : windows) {
-            if (window instanceof CustomerDashboardUI) {
-                window.toFront();
-                return;
-            }
-        }
-        if (user.getRole().equals("Admin")) {
-            new AdminDashboardUI(user);
-        } else if (user.getRole().equals("Delivery Company")) {
-            new DeliveryCompanyDashboardUI(user);
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User testUser = new User(1, "John Doe", "johndoe@example.com", "Admin", "Customer");
-            new PackageManagementUI(testUser);
-        });
     }
 }

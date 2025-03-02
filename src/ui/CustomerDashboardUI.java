@@ -6,10 +6,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class DashboardUI extends JFrame {
+public class CustomerDashboardUI extends JFrame {
     private final User user;
 
-    public DashboardUI(User user) {
+    public CustomerDashboardUI(User user) {
         this.user = user; // Ensure user is used
         setTitle("Dashboard - " + user.getName());
         setSize(700, 500);
@@ -82,7 +82,7 @@ public class DashboardUI extends JFrame {
 
         SwingUtilities.invokeLater(() -> {
             User testUser = new User(1, "John Doe", "johndoe@example.com", "Admin", "Customer");
-            DashboardUI dashboard = new DashboardUI(testUser);
+            CustomerDashboardUI dashboard = new CustomerDashboardUI(testUser);
             dashboard.setVisible(true);
         });
     }

@@ -96,7 +96,7 @@ public class LoginUI extends JFrame {
         if (user != null) {
             JOptionPane.showMessageDialog(this, "Login successful!", "Success", JOptionPane.INFORMATION_MESSAGE);
             dispose();
-            SwingUtilities.invokeLater(() -> new DashboardUI(user).setVisible(true));
+            SwingUtilities.invokeLater(() -> new CustomerDashboardUI(user).setVisible(true));
         } else {
             JOptionPane.showMessageDialog(this, "Invalid email or password!", "Error", JOptionPane.ERROR_MESSAGE);
         }
