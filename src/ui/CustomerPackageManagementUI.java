@@ -118,11 +118,4 @@ public class CustomerPackageManagementUI extends JFrame {
             new DeliveryCompanyDashboardUI(user);
         }
     }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            User testUser = new User(1, "John Doe", "johndoe@example.com", "Admin", "Customer");
-            new CustomerPackageManagementUI(testUser);
-        });
-    }
 }
