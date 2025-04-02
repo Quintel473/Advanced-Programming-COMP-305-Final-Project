@@ -79,11 +79,6 @@ public class CustomerDashboardUI extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        SwingUtilities.invokeLater(() -> {
-            User testUser = new User(1, "John Doe", "johndoe@example.com", "Admin", "Customer");
-            CustomerDashboardUI dashboard = new CustomerDashboardUI(testUser);
-            dashboard.setVisible(true);
-        });
+        
     }
 }

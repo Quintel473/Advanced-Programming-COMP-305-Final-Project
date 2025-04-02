@@ -1,13 +1,10 @@
 package main;
 
-import ui.LoginUI;
+import ui.SplashScreen;
 
 public class Main {
     public static void main(String[] args) {
-
-        // Start the Login UI
-        LoginUI loginUI = new LoginUI();
-        loginUI.setVisible(true);
-
+        // Launch the Splash Screen first
+        new SplashScreen(); // Displays the splash screen and transitions to LoginUI
     }
 }

@@ -1,6 +1,6 @@
 package models;
 
-public class    User {
+public class User {
     private int id;
     private String name;
     private String email;
@@ -21,4 +21,14 @@ public class    User {
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public String getRole() { return role; }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

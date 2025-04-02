@@ -42,29 +42,27 @@ public class DeliveryCompanyDashboardUI extends JFrame {
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setBackground(Color.WHITE);
 
+        // Refresh Button
         JButton refreshButton = createStyledButton("Refresh");
         refreshButton.addActionListener(e -> loadPackages());
 
+        // Update Status Button
         JButton updateStatusButton = createStyledButton("Update Status");
         updateStatusButton.setBackground(new Color(255, 193, 7)); // Yellow color for Update Status
-        updateStatusButton.addActionListener(e -> {
-            String packageIdStr = JOptionPane.showInputDialog(this, "Enter Package ID:");
-            String newStatus = JOptionPane.showInputDialog(this, "Enter New Status:");
-            if (packageIdStr != null && !packageIdStr.trim().isEmpty() && newStatus != null && !newStatus.trim().isEmpty()) {
-                int packageId = Integer.parseInt(packageIdStr);
-                boolean success = PackageService.updatePackageStatus(packageId, newStatus);
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Package status updated successfully!");
-                    loadPackages(); // Refresh the list
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to update package status.");
-                }
-            }
+        updateStatusButton.addActionListener(e -> updatePackageStatus());
+
+        // Logout Button
+        JButton logoutButton = createStyledButton("Logout");
+        logoutButton.setBackground(new Color(220, 53, 69)); // Red color for Logout
+        logoutButton.addActionListener(e -> {
+            dispose();
+            SwingUtilities.invokeLater(() -> new LoginUI().setVisible(true)); // Reopen login page
         });
 
         // Add Buttons
         buttonPanel.add(refreshButton);
         buttonPanel.add(updateStatusButton);
+        buttonPanel.add(logoutButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
@@ -83,17 +81,44 @@ public class DeliveryCompanyDashboardUI extends JFrame {
     }
 
     private void loadPackages() {
-        List<Package> packages = PackageService.getUserPackages(user.getId());
-        packageListArea.setText("");
-        for (Package p : packages) {
-            packageListArea.append(
-                    "ID: " + p.getId() +
-                            " | Tracking: " + p.getTrackingNumber() +
-                            " | Sender ID: " + p.getSenderId() +
-                            " | Recipient ID: " + p.getRecipientId() +
-                            " | Status: " + p.getStatus() +
-                            " | Created At: " + p.getCreatedAt() + "\n"
-            );
+        try {
+            List<Package> packages = PackageService.getAllPackages(); // Fetch all packages
+            packageListArea.setText(""); // Clear the text area
+            for (Package p : packages) {
+                packageListArea.append(
+                        "ID: " + p.getId() +
+                                " | Tracking: " + p.getTrackingNumber() +
+                                " | Sender ID: " + p.getSenderId() +
+                                " | Recipient ID: " + p.getRecipientId() +
+                                " | Status: " + p.getStatus() +
+                                " | Created At: " + p.getCreatedAt() + "\n"
+                );
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Failed to load packages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void updatePackageStatus() {
+        try {
+            String packageIdStr = JOptionPane.showInputDialog(this, "Enter Package ID:");
+            String newStatus = JOptionPane.showInputDialog(this, "Enter New Status:");
+            if (packageIdStr != null && !packageIdStr.trim().isEmpty() && newStatus != null && !newStatus.trim().isEmpty()) {
+                int packageId = Integer.parseInt(packageIdStr);
+                boolean success = PackageService.updatePackageStatus(packageId, newStatus);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Package status updated successfully!");
+                    loadPackages(); // Refresh the list
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to update package status.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please try again.", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Package ID must be an integer.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error updating package status: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -20,17 +20,14 @@ public class AdminDashboardUI extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
 
-        // Main Panel
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         mainPanel.setBackground(Color.WHITE);
 
-        // Title Label
         JLabel titleLabel = new JLabel("Admin Dashboard", SwingConstants.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         mainPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Package List Area
         packageListArea = new JTextArea();
         packageListArea.setEditable(false);
         packageListArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
@@ -38,33 +35,31 @@ public class AdminDashboardUI extends JFrame {
         JScrollPane scrollPane = new JScrollPane(packageListArea);
         mainPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Buttons Panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
         buttonPanel.setBackground(Color.WHITE);
 
         JButton refreshButton = createStyledButton("Refresh");
         refreshButton.addActionListener(e -> loadPackages());
 
-        JButton updateStatusButton = createStyledButton("Update Status");
-        updateStatusButton.setBackground(new Color(255, 193, 7)); // Yellow color for Update Status
-        updateStatusButton.addActionListener(e -> {
-            String packageIdStr = JOptionPane.showInputDialog(this, "Enter Package ID:");
-            String newStatus = JOptionPane.showInputDialog(this, "Enter New Status:");
-            if (packageIdStr != null && !packageIdStr.trim().isEmpty() && newStatus != null && !newStatus.trim().isEmpty()) {
-                int packageId = Integer.parseInt(packageIdStr);
-                boolean success = PackageService.updatePackageStatus(packageId, newStatus);
-                if (success) {
-                    JOptionPane.showMessageDialog(this, "Package status updated successfully!");
-                    loadPackages(); // Refresh the list
-                } else {
-                    JOptionPane.showMessageDialog(this, "Failed to update package status.");
-                }
-            }
+        JButton addPackageButton = createStyledButton("Add");
+        addPackageButton.setBackground(new Color(40, 167, 69)); // Green color for Add Package
+        addPackageButton.addActionListener(e -> addPackage());
+
+        JButton deletePackageButton = createStyledButton("Delete");
+        deletePackageButton.setBackground(new Color(255, 80, 80)); // Red color for Delete Package
+        deletePackageButton.addActionListener(e -> deletePackage());
+
+        JButton logoutButton = createStyledButton("Logout");
+        logoutButton.setBackground(new Color(220, 53, 69)); // Red color for Logout
+        logoutButton.addActionListener(e -> {
+            dispose();
+            SwingUtilities.invokeLater(() -> new LoginUI().setVisible(true)); // Reopen login page
         });
 
-        // Add Buttons
         buttonPanel.add(refreshButton);
-        buttonPanel.add(updateStatusButton);
+        buttonPanel.add(addPackageButton);
+        buttonPanel.add(deletePackageButton);
+        buttonPanel.add(logoutButton);
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
@@ -83,18 +78,70 @@ public class AdminDashboardUI extends JFrame {
     }
 
     private void loadPackages() {
-        List<Package> packages = PackageService.getUserPackages(user.getId());
-        packageListArea.setText("");
-        for (Package p : packages) {
-            packageListArea.append(
-                    "ID: " + p.getId() +
-                            " | Tracking: " + p.getTrackingNumber() +
-                            " | Sender ID: " + p.getSenderId() +
-                            " | Recipient ID: " + p.getRecipientId() +
-                            " | Status: " + p.getStatus() +
-                            " | Created At: " + p.getCreatedAt() + "\n"
-            );
+        try {
+            List<Package> packages = PackageService.getAllPackages(); // Fetch all packages
+            packageListArea.setText(""); // Clear the text area
+            for (Package p : packages) {
+                packageListArea.append(
+                        "ID: " + p.getId() +
+                                " | Tracking: " + p.getTrackingNumber() +
+                                " | Sender ID: " + p.getSenderId() +
+                                " | Recipient ID: " + p.getRecipientId() +
+                                " | Status: " + p.getStatus() +
+                                " | Created At: " + p.getCreatedAt() + "\n"
+                );
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Failed to load packages: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
+    private void addPackage() {
+        try {
+            String trackingNumber = JOptionPane.showInputDialog(this, "Enter Tracking Number:");
+            String senderIdStr = JOptionPane.showInputDialog(this, "Enter Sender ID:");
+            String recipientIdStr = JOptionPane.showInputDialog(this, "Enter Recipient ID:");
+            if (trackingNumber != null && !trackingNumber.trim().isEmpty() &&
+                    senderIdStr != null && !senderIdStr.trim().isEmpty() &&
+                    recipientIdStr != null && !recipientIdStr.trim().isEmpty()) {
+                int senderId = Integer.parseInt(senderIdStr);
+                int recipientId = Integer.parseInt(recipientIdStr);
+                boolean success = PackageService.addPackage(trackingNumber, senderId, recipientId);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Package added successfully!");
+                    loadPackages(); // Refresh the list
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to add package.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please try again.", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Sender and Recipient IDs must be integers.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error adding package: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void deletePackage() {
+        try {
+            String packageIdStr = JOptionPane.showInputDialog(this, "Enter Package ID to Delete:");
+            if (packageIdStr != null && !packageIdStr.trim().isEmpty()) {
+                int packageId = Integer.parseInt(packageIdStr);
+                boolean success = PackageService.deletePackage(packageId);
+                if (success) {
+                    JOptionPane.showMessageDialog(this, "Package deleted successfully!");
+                    loadPackages(); // Refresh the list
+                } else {
+                    JOptionPane.showMessageDialog(this, "Failed to delete package. It may have associated tracking updates.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please try again.", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Package ID must be an integer.", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error deleting package: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }
