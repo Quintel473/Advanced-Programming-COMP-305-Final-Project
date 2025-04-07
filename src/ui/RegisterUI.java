@@ -48,7 +48,7 @@ public class RegisterUI extends JFrame {
         formPanel.add(passwordField);
 
         formPanel.add(new JLabel("Role:"));
-        String[] roles = {"Admin", "Delivery Company","Customer"};
+        String[] roles = {"Customer", "Delivery Company"};
         roleComboBox = new JComboBox<>(roles);
         formPanel.add(roleComboBox);
 
